@@ -7,7 +7,8 @@ const { ensureAuth } = require('../middlewares/auth')
 const router = express.Router()
 
 // router.post('/api/register', (req, res) => {
-//     console.log(req.body.name)
+//     console.log(req.body)
+//     res.send(req.body)
 //     bcrypt.genSalt(10, (err, salt) => {
 //         bcrypt.hash(req.body.password, salt, (err, hash) => {
 //             const newAdmin = new Admin({

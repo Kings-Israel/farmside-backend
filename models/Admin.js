@@ -12,6 +12,9 @@ const AdminSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    phone_number: {
+        type: String
+    },
     profile_pic: {
         type: String
     }

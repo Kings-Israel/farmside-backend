@@ -39,6 +39,7 @@ app.use(passport.session())
 
 // Routes
 app.use('/auth', require('./routes/auth'))
+app.use('/user', require('./routes/user'))
 
 app.listen(process.env.PORT, () => {
     console.log(`Listening on port ${process.env.PORT}`)

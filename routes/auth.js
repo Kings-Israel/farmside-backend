@@ -1,51 +1,66 @@
 const express = require('express')
 const bcrypt = require('bcrypt')
 const passport = require('passport')
+const multer = require('multer')
 const Admin = require('../models/Admin')
 const jwt = require('jsonwebtoken')
 const { ensureAuth } = require('../middlewares/auth')
 const router = express.Router()
 
-// router.post('/api/register', (req, res) => {
-//     console.log(req.body)
-//     res.send(req.body)
-//     bcrypt.genSalt(10, (err, salt) => {
-//         bcrypt.hash(req.body.password, salt, (err, hash) => {
-//             const newAdmin = new Admin({
-//                 name: req.body.name,
-//                 email: req.body.email,
-//                 password: hash
-//             })
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads');
+    },
+    filename: (req, file, cb) => {
+        console.log(file);
+        cb(null, Date.now() + path.extname(file.originalname));
+    }
+});
 
-//             if (newAdmin.save()) {
-//                 console.log(newAdmin)
-//                 return res.send('Admin added')
-//             }
+const fileFilter = (req, file, cb) => {
+    if (file.mimetype == 'image/jpeg' || file.mimetype == 'image/png') {
+        cb(null, true);
+    } else {
+        cb(null, false);
+    }
+}
 
-//             return res.send('Error adding admin')
-//         })
-//     })
-// })
+const upload = multer({ storage: storage, fileFilter: fileFilter });
 
-router.post('/api/login', passport.authenticate('local'),
+
+router.post('/register/:id', (req, res) => {
+    console.log({id: req.params.id, body: req.body.name})
+    res.send('success')
+    // bcrypt.genSalt(10, (err, salt) => {
+    //     bcrypt.hash(req.body.password, salt, (err, hash) => {
+    //         const newAdmin = new Admin({
+    //             name: req.body.name,
+    //             phone_number: req.body.phone_number,
+    //             email: req.body.email,
+    //             password: hash,
+    //             profile_pic: req.file.filename
+    //         })
+
+    //         if (newAdmin.save()) {
+    //             console.log(newAdmin)
+    //             return res.send('Admin added')
+    //         }
+
+    //         return res.send('Error adding admin')
+    //     })
+    // })
+})
+
+router.post('/login', passport.authenticate('local'),
     function(req, res) {
         let token = jwt.sign({id: req.user.id}, 'farmside', { expiresIn: 86400})
         res.send({token: token, user: req.user})
     }
 )
 
-router.get('/api/logout', (req, res) => {
+router.get('/logout', (req, res) => {
     req.logOut()
     return res.send()
-})
-
-router.post('/api/user', (req, res) => {
-    Admin.findOne({email: req.body.email}, (err, admin) => {
-        if (err) {
-            console.log(err)
-        }
-        res.send(admin)
-    })
 })
 
 module.exports = router

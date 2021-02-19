@@ -37,6 +37,9 @@ app.use(session({
 app.use(passport.initialize())
 app.use(passport.session())
 
+// Static folder
+app.use(express.static('./admin/profile_pics'))
+
 // Routes
 app.use('/auth', require('./routes/auth'))
 app.use('/user', require('./routes/user'))

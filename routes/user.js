@@ -1,5 +1,6 @@
 const express = require('express')
 const multer = require('multer')
+const path = require('path')
 const router = express.Router()
 const Admin = require('../models/Admin')
 const ProfilePic = require('../models/ProfilePic')
@@ -76,8 +77,8 @@ router.post('/updateInfo/:id', async (req, res) => {
     }
 })
 
-router.post('/uploadImage/:id', (req, res) => {
-    upload(req, res, (err) => {
+router.post('/uploadImage/', (req, res) => {
+    upload(req, res, async (err) => {
       if (err) {
         res.send({message: 'Error'})
       } else {
@@ -85,7 +86,7 @@ router.post('/uploadImage/:id', (req, res) => {
           res.send({message: 'Undefined'})
         } else {
           try {
-            const admin = Admin.findByIdAndUpdate({_id: req.params.id}, {'profile_pic': req.file.filename}, { upsert: true, new: true })
+            let admin = await Admin.findOneAndUpdate({_id: req.body.id}, {'profile_pic': req.file.filename}, {returnOriginal: false}).lean()
             res.send(admin)
           } catch (error) {
             console.log(error)

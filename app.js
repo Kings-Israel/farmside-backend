@@ -7,6 +7,7 @@ const connectDB = require('./config/db')
 const session = require('express-session')
 const { Mongoose } = require('mongoose')
 const passport = require('passport')
+const path = require('path')
 const MongoStore = require('connect-mongo')(session)
 
 dotenv.config({path: './config/config.env'})
@@ -19,12 +20,15 @@ connectDB()
 
 const app = express()
 
+// Static folder
+app.use('/admin', express.static(__dirname + '/admin'))
+app.use(cors())
+
 app.use(express.urlencoded({extended: false}))
 app.use(express.json())
 
 app.use(morgan('dev'))
 
-app.use(cors())
 
 app.use(session({
     secret: 'farmside',
@@ -36,9 +40,6 @@ app.use(session({
 // Passport middleware
 app.use(passport.initialize())
 app.use(passport.session())
-
-// Static folder
-app.use(express.static('./admin/profile_pics'))
 
 // Routes
 app.use('/auth', require('./routes/auth'))

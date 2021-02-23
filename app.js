@@ -27,7 +27,7 @@ connectDB()
 const app = express()
 
 // Static folder
-app.use('/admin', express.static(__dirname + '/admin'))
+app.use('/uploads', express.static(__dirname + '/public/'))
 app.use(cors(corsOptions))
 
 app.use(express.urlencoded({extended: false}))

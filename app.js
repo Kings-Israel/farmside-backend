@@ -53,6 +53,7 @@ app.use('/user', require('./routes/user'))
 app.use('/messages', require('./routes/message'))
 app.use('/bookings', require('./routes/booking'))
 app.use('/about', require('./routes/about'))
+app.use('/portfolio', require('./routes/portfolio'))
 
 app.listen(process.env.PORT, () => {
     console.log(`Listening on port ${process.env.PORT}`)

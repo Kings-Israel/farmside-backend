@@ -4,7 +4,6 @@ const passport = require('passport')
 const multer = require('multer')
 const Admin = require('../models/Admin')
 const jwt = require('jsonwebtoken')
-const { ensureAuth } = require('../middlewares/auth')
 const router = express.Router()
 
 const storage = multer.diskStorage({

@@ -2,6 +2,7 @@ const express = require("express");
 const About = require("../models/About");
 const multer = require("multer");
 const path = require("path");
+const fs = require('fs')
 const AboutImages = require("../models/AboutImages");
 const router = express.Router();
 
@@ -108,7 +109,14 @@ router.post("/images", (req, res) => {
           let aboutImages = await AboutImages.find();
           if (aboutImages) {
             aboutImages.forEach(async (image) => {
-              await AboutImages.deleteOne({ originalName: image.originalName });
+              fs.unlink(`./public/about/${image.fileName}`, async (err) => {
+                if(err){
+                  res.send(err)
+                  console.log(err)
+                  return
+                }
+                await AboutImages.deleteOne({ originalName: image.originalName });
+              })
             });
           }
           req.files.forEach(async (file) => {

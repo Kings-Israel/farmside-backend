@@ -4,6 +4,7 @@ const multer = require("multer");
 const path = require("path");
 const fs = require('fs')
 const PortfolioImages = require('../models/PortfolioImages')
+const PortfolioVideo = require('../models/PortfolioVideo')
 const router = express.Router()
 
 const storage = multer.diskStorage({
@@ -84,7 +85,60 @@ router.delete('/:name', async (req, res) => {
 
 router.get('/images', async (req, res) => {
     const images = await PortfolioImages.find()
-    res.send(images)
+    res.send({images})
 })
 
+const videostorage = multer.diskStorage({
+    destination: './public/portfolio/videos',
+    filename: function(req, file, cb){
+      cb(null,file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+    }
+  });
+  
+  // Init Upload
+  const videoupload = multer({
+    storage: videostorage,
+    limits:{fileSize: 10000000},
+    fileFilter: function(req, file, cb){
+      checkVideoFileType(file, cb);
+    }
+  }).single('video');
+  
+  // Check File Type
+  function checkVideoFileType(file, cb){
+    // Allowed ext
+    const filetypes = /mp4|webm|ogg/;
+    // Check ext
+    const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+    // Check mime
+    const mimetype = filetypes.test(file.mimetype);
+  
+    if(mimetype && extname){
+      return cb(null,true);
+    } else {
+      cb('Error: Images Only!');
+    }
+  }
+
+router.post("/video", (req, res) => {
+    try {
+        console.log(req.videos)
+        videoupload(req, res, async (err) => {
+        if (err) {
+            res.send({ message: "Error" });
+        } else {
+            if (req.file === undefined) {
+            res.send({ message: "Undefined" });
+            } else {
+                await PortfolioVideo.insertOne({originalName: req.file.originalname, fileName: req.file.filename})
+                const videos = await PortfolioVideo.find()
+                res.send({ message: "success", videos });
+            }
+        }
+        });
+    } catch (error) {
+        console.log(error);
+        res.send(error);
+    }
+});
 module.exports = router

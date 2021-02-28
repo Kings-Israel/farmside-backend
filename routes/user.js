@@ -1,5 +1,6 @@
 const express = require('express')
 const path = require('path')
+const fs = require('fs')
 const { pathToFileURL } = require('url')
 const multer = require('multer')
 const router = express.Router()
@@ -39,13 +40,6 @@ function checkFileType(file, cb){
 }
 
 router.get('/:id', (req, res) => {
-  try {
-    const admin = Admin.findById(req.params.id)
-      .populate('')
-  } catch (error) {
-    console.log(error)
-    res.send(error)
-  }
     Admin.findById(req.params.id, (err, admin) => {
         if (err) {
             res.send(err)
@@ -86,8 +80,15 @@ router.post('/uploadImage/', (req, res) => {
         if (req.file === undefined) {
           res.send({message: 'Undefined'})
         } else {
-          let admin = await Admin.findOneAndUpdate({_id: req.body.id}, {'profile_pic': req.file.filename}, {returnOriginal: false}).lean()
-          res.send(admin)
+          let currentImage = await Admin.findOne({_id: req.body.id})
+          fs.unlink(`./public/images/${currentImage.profile_pic}`, async (err) => {
+            if(err) {
+              console.log(err)
+              return
+            }
+            let admin = await Admin.findOneAndUpdate({_id: req.body.id}, {'profile_pic': req.file.filename}, {returnOriginal: false}).lean()
+            res.send(admin)
+          })
         }
       }
     })

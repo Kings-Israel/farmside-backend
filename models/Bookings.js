@@ -30,6 +30,10 @@ const BookingSchema = mongoose.Schema({
     },
     event_details: {
         type: Object,
+    },
+    booking_date: {
+        type: Date,
+        default: Date.now()
     }
 })
 

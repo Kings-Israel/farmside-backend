@@ -1,6 +1,5 @@
 const express = require('express')
 const Message = require('../models/Message')
-const nodemailer = require('nodemailer')
 const router = express.Router()
 
 router.get('/messages', async (req, res) => {
@@ -33,52 +32,24 @@ router.delete('/delete/:id', async (req, res) => {
     }
 })
 router.post('/message', (req, res) => {
-    // try {
-    //     const message = new Message({
-    //         name: req.body.name,
-    //         email: req.body.email,
-    //         phone_number: req.body.phone_number,
-    //         message: req.body.message
-    //     })
+    try {
+        const message = new Message({
+            name: req.body.name,
+            email: req.body.email,
+            phone_number: req.body.phone_number,
+            message: req.body.message
+        })
         
-    //     if (message.save()) {
-    //         res.send({message: 'success'})
-    //     } else {
-    //         res.send({message: 'error'})
-    //     }
-    // } catch (error) {
-    //     console.log(error)
-    //     res.send(error)
-    // }
-    var transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-            type: 'OAuth2',
-            user: process.env.EMAIL,
-            password: process.env.PASSWORD,
-            clientId: process.env.CLIENT_ID,
-            clientSecret: process.env.CLIENT_SECRET,
-            refreshToken: process.env.REFRESH_TOKEN
-        }
-    })
-
-    var mailOptions = {
-        from: process.env.EMAIL,
-        to: 'kingsmilimo@yahoo.com',
-        subject: `New message from ${req.body.from_name}`,
-        text: `${req.body.message}\n Phone Number: ${req.body.phone_number} Email: ${req.body.email}`,
-        replyTo: `${req.body.email}`
-    }
-
-    transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-            res.send({message: 'Failed'})
-            console.log(error)
-        } else {
-            console.log(info.response)
+        if (message.save()) {
+            req.app.io.sockets.emit('newMessage', message)
             res.send({message: 'success'})
+        } else {
+            res.send({message: 'error'})
         }
-    })
+    } catch (error) {
+        console.log(error)
+        res.send(error)
+    }
 })
 
 module.exports = router

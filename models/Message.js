@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const moment = require('moment')
 const MessageSchema = mongoose.Schema({
     name: {
         type: String,
@@ -18,7 +19,7 @@ const MessageSchema = mongoose.Schema({
     },
     date: {
         type: Date,
-        default: Date.now()
+        default: moment.now()
     }
 })
 

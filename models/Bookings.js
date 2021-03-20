@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const moment = require('moment')
 const BookingSchema = mongoose.Schema({
     name: {
         type: String,
@@ -33,7 +34,7 @@ const BookingSchema = mongoose.Schema({
     },
     booking_date: {
         type: Date,
-        default: Date.now()
+        default: moment.now()
     }
 })
 

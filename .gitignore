@@ -1,4 +1,4 @@
 /node_modules
 /admin/profile_pics
 /public/
-/config
+/config/config.env
